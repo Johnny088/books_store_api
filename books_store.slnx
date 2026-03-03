@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="books_store_api/books_store_api.csproj" />
+  <Project Path="books_store_BLL/books_store_BLL.csproj" />
+  <Project Path="books_store_DAL/books_store_DAL.csproj" />
+</Solution>

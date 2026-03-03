@@ -1,0 +1,51 @@
+1) Need to Install ASP.NET CORE WEB API  application
+
+then ==>
+
+Nuget Package search(Swashbuckle.AspNetCore by domaindrivendev <Swagger tools for documenting APIs built on ASP.NET Core>) 
+
+==> Install it to the book_store_api
+
+==> then open the program.cs file
+
+-----------------------------------------------------------------------------------
+
+==> builder.Services.AddOpenApi(); turn into builder.Services.AddSwaggerGen();
+
+
+==> 
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}                                              turn into ==>
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+-----------------------------------------------------------------------------------
+
+to open Swagger in our bwouser we need to add swagger into the address line like that ==>
+https://localhost:7192/swagger/index.html /index.html is added by default parameters
+
+
+
+                                                        3 layer Architecture
+
+we need to click the right button on the solution ==> add new project (type: Class library)
+==> name: books_store_BLL (we need or should use the name of the solution + BLL) - Business Logic Layer
+
+then need to make the third project type: 'Class library' as well
+==> name: books_store_DAL - Data access Layer
+
+then ==> Bll ==> right click on dependencies ==> add project reference ==> need to put check on the DAL project
+
+Bll only depends on DAL
+
+then api project ==> right click on the dependencies ==> add project reference ==> check BLL and DAL.
+
+api depends on both projects, and DAL needed to be include to the dependency enjection
