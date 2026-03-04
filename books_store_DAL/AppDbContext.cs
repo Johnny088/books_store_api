@@ -26,7 +26,7 @@ namespace books_store_DAL
             //friendship
             modelBuilder.Entity<BookEntity>().HasOne(b => b.Author).WithMany(a => a.Books);
             //modelBuilder.Entity<BookEntity>().HasMany(b => b.Genres).WithMany(g => g.Books);
-            modelBuilder.Entity<BookEntityGenreEntity>().HasKey(k => new { k.BookId, k.GenreId});
+            modelBuilder.Entity<BookEntityGenreEntity>().HasKey(k => new { k.BookEntityId, k.GenreEntityId });
 
             //Other data type and default parameters 
             modelBuilder.Entity<BookEntity>(e =>
@@ -48,9 +48,9 @@ namespace books_store_DAL
             //---------------------------------------------------------------------------------
             var authors = new List<AuthorEntity>
             {
-                new AuthorEntity {Id = 1, Name = "J.K. Rowling", BirthDate = new DateTime(1965, 7, 31) },
-                new AuthorEntity {Id = 2, Name = "George R.R. Martin", BirthDate = new DateTime(1948, 9, 20) },
-                new AuthorEntity {Id = 3, Name = "J.R.R. Tolkien", BirthDate = new DateTime(1892, 1, 3) }
+                new AuthorEntity {Id = 1, Name = "J.K. Rowling", BirthDate = new DateTime(1965, 7, 31, 0, 0, 0, DateTimeKind.Utc) },
+                new AuthorEntity {Id = 2, Name = "George R.R. Martin", BirthDate = new DateTime(1948, 9, 20, 0, 0, 0, DateTimeKind.Utc) },
+                new AuthorEntity {Id = 3, Name = "J.R.R. Tolkien", BirthDate = new DateTime(1892, 1, 3, 0, 0, 0, DateTimeKind.Utc) }
             };
             modelBuilder.Entity<AuthorEntity>().HasData(authors);
             //----------------------------------------------------------------
@@ -62,11 +62,11 @@ namespace books_store_DAL
             };
             modelBuilder.Entity<GenreEntity>().HasData(genres);
             //----------------------------------------------------------
-            //var booksGenres = new List<BookEntityGenreEntity> 
+            //var booksGenres = new List<BookEntityGenreEntity>
             //{
-            //    new BookEntityGenreEntity {GenreId = 1, BookId = 1},
-            //    new BookEntityGenreEntity {GenreId = 3, BookId = 2},
-            //    new BookEntityGenreEntity {GenreId = 2, BookId = 3},
+            //    new BookEntityGenreEntity {GenreEntityId = 1, BookEntityId = 1},
+            //    new BookEntityGenreEntity {GenreEntityId = 3, BookEntityId = 2},
+            //    new BookEntityGenreEntity {GenreEntityId = 2, BookEntityId = 3},
             //};
             //modelBuilder.Entity<BookEntityGenreEntity>().HasData(booksGenres);
 
