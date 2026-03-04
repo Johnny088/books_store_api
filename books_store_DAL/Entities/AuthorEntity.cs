@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace books_store_DAL.Entities
+{
+    public class AuthorEntity
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string? Image { get; set; }
+        public IEnumerable<BookEntity> Books {  get; set; } = new List<BookEntity>();
+    }
+}

@@ -49,3 +49,75 @@ Bll only depends on DAL
 then api project ==> right click on the dependencies ==> add project reference ==> check BLL and DAL.
 
 api depends on both projects, and DAL needed to be include to the dependency enjection
+
+                                                      Installing different packages to the progects
+
+                                                      DAL
+
+nuget packages ==> Microsoft.EntityFrameworkCore 
+then ==> Microsoft.EntityFrameworkCore.Design
+then ==> Npgsql.EntityFrameworkCore.PostgreSQ
+
+                                                      API
+
+nuget packages ==> Microsoft.EntityFrameworkCore.Tools
+
+---------------------------------------------------------------------------------------------------------------------
+
+then we need to make a class AppDbContext inside the DAL project.
+
+==> need to change class as a public. 
+==> inheritance from DbContext
+==> we gets "DbContextOptions options" in our constructor
+==> and send "options" to the parent constructor
+
+public class AppDbContext: DbContext
+    {
+        public AppDbContext(DbContextOptions options)
+            : base(options)
+        {
+            
+        }
+    }
+
+
+
+
+                      DbContext is the main class of the Entity Framework
+  It opens the conection to the database
+  listens changes
+  does sql query
+
+                       DbContextOptions - it's setting for connection
+  It has connection string
+  type database ( for example SQL Server, PostreSQL, and so on)
+  and other configs
+
+
+==> then we need conection string
+
+in appsetting.json we need to create connection string (API project)
+
+then we make DbContext in API's Program.cs
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    string connectionString = builder.Configuration.GetConnectionString("LocalDb")!;  // ? or !
+    options.UseNpgsql(connectionString);
+});
+
+then we need to make tables
+
+==> we create Entities folder in DAL for classes
+
+
+after making classes we need to open AppDbContext.cs 
+
+then ==> we describe tables in modelBuilder
+
+then ==> turn the right project DAL to make a migration
+
+add-migration name
+update-database
+
+then need to make a controlers in the folder controllers
