@@ -16,6 +16,5 @@ namespace books_store_DAL.Entities
         public int AuthorId { get; set; }
         public AuthorEntity? Author { get; set; }
         public ICollection<GenreEntity>? Genres { get; set; } = new List<GenreEntity>();
-
     }
 }

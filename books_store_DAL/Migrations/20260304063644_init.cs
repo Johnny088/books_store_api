@@ -74,24 +74,24 @@ namespace books_store_DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BookEntityGenreEntity",
+                name: "BookGenres",
                 columns: table => new
                 {
-                    BookEntityId = table.Column<int>(type: "integer", nullable: false),
-                    GenreEntityId = table.Column<int>(type: "integer", nullable: false)
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    GenreId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BookEntityGenreEntity", x => new { x.BookEntityId, x.GenreEntityId });
+                    table.PrimaryKey("PK_BookGenres", x => new { x.BookId, x.GenreId });
                     table.ForeignKey(
-                        name: "FK_BookEntityGenreEntity_Books_BookEntityId",
-                        column: x => x.BookEntityId,
+                        name: "FK_BookGenres_Books_BookId",
+                        column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BookEntityGenreEntity_Genres_GenreEntityId",
-                        column: x => x.GenreEntityId,
+                        name: "FK_BookGenres_Genres_GenreId",
+                        column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -102,9 +102,9 @@ namespace books_store_DAL.Migrations
                 columns: new[] { "Id", "BirthDate", "Image", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(1965, 7, 31, 0, 0, 0, 0, DateTimeKind.Utc), null, "J.K. Rowling" },
-                    { 2, new DateTime(1948, 9, 20, 0, 0, 0, 0, DateTimeKind.Utc), null, "George R.R. Martin" },
-                    { 3, new DateTime(1892, 1, 3, 0, 0, 0, 0, DateTimeKind.Utc), null, "J.R.R. Tolkien" }
+                    { 1, new DateTime(1965, 7, 30, 22, 0, 0, 0, DateTimeKind.Utc), null, "J.K. Rowling" },
+                    { 2, new DateTime(1948, 9, 19, 22, 0, 0, 0, DateTimeKind.Utc), null, "George R.R. Martin" },
+                    { 3, new DateTime(1892, 1, 2, 22, 0, 0, 0, DateTimeKind.Utc), null, "J.R.R. Tolkien" }
                 });
 
             migrationBuilder.InsertData(
@@ -118,8 +118,18 @@ namespace books_store_DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "BookEntityGenreEntity",
-                columns: new[] { "BookEntityId", "GenreEntityId" },
+                table: "Books",
+                columns: new[] { "Id", "AuthorId", "Description", "Image", "Pages", "PublishedYear", "Title" },
+                values: new object[,]
+                {
+                    { 1, 1, null, null, 300, 1997, "Harry Potter and the Philoosopher's Stone" },
+                    { 2, 2, null, null, 300, 1996, "A game of thrones" },
+                    { 3, 3, null, null, 300, 1937, "The Hobbit" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "BookGenres",
+                columns: new[] { "BookId", "GenreId" },
                 values: new object[,]
                 {
                     { 1, 1 },
@@ -128,9 +138,9 @@ namespace books_store_DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookEntityGenreEntity_GenreEntityId",
-                table: "BookEntityGenreEntity",
-                column: "GenreEntityId");
+                name: "IX_BookGenres_GenreId",
+                table: "BookGenres",
+                column: "GenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_AuthorId",
@@ -147,7 +157,7 @@ namespace books_store_DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BookEntityGenreEntity");
+                name: "BookGenres");
 
             migrationBuilder.DropTable(
                 name: "Genres");

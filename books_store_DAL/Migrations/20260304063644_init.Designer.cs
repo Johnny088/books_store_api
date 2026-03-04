@@ -12,7 +12,7 @@ using books_store_DAL;
 namespace books_store_DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260304040445_init")]
+    [Migration("20260304063644_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -53,19 +53,19 @@ namespace books_store_DAL.Migrations
                         new
                         {
                             Id = 1,
-                            BirthDate = new DateTime(1965, 7, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            BirthDate = new DateTime(1965, 7, 30, 22, 0, 0, 0, DateTimeKind.Utc),
                             Name = "J.K. Rowling"
                         },
                         new
                         {
                             Id = 2,
-                            BirthDate = new DateTime(1948, 9, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            BirthDate = new DateTime(1948, 9, 19, 22, 0, 0, 0, DateTimeKind.Utc),
                             Name = "George R.R. Martin"
                         },
                         new
                         {
                             Id = 3,
-                            BirthDate = new DateTime(1892, 1, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            BirthDate = new DateTime(1892, 1, 2, 22, 0, 0, 0, DateTimeKind.Utc),
                             Name = "J.R.R. Tolkien"
                         });
                 });
@@ -111,37 +111,66 @@ namespace books_store_DAL.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("books_store_DAL.Entities.BookEntityGenreEntity", b =>
-                {
-                    b.Property<int>("BookEntityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GenreEntityId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("BookEntityId", "GenreEntityId");
-
-                    b.HasIndex("GenreEntityId");
-
-                    b.ToTable("BookEntityGenreEntity");
 
                     b.HasData(
                         new
                         {
-                            BookEntityId = 1,
-                            GenreEntityId = 1
+                            Id = 1,
+                            AuthorId = 1,
+                            Pages = 300,
+                            PublishedYear = 1997,
+                            Rating = 0f,
+                            Title = "Harry Potter and the Philoosopher's Stone"
                         },
                         new
                         {
-                            BookEntityId = 2,
-                            GenreEntityId = 3
+                            Id = 2,
+                            AuthorId = 2,
+                            Pages = 300,
+                            PublishedYear = 1996,
+                            Rating = 0f,
+                            Title = "A game of thrones"
                         },
                         new
                         {
-                            BookEntityId = 3,
-                            GenreEntityId = 2
+                            Id = 3,
+                            AuthorId = 3,
+                            Pages = 300,
+                            PublishedYear = 1937,
+                            Rating = 0f,
+                            Title = "The Hobbit"
+                        });
+                });
+
+            modelBuilder.Entity("books_store_DAL.Entities.BookGenreEntity", b =>
+                {
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BookId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("BookGenres");
+
+                    b.HasData(
+                        new
+                        {
+                            BookId = 1,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            BookId = 2,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 3,
+                            GenreId = 2
                         });
                 });
 
@@ -196,23 +225,23 @@ namespace books_store_DAL.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("books_store_DAL.Entities.BookEntityGenreEntity", b =>
+            modelBuilder.Entity("books_store_DAL.Entities.BookGenreEntity", b =>
                 {
-                    b.HasOne("books_store_DAL.Entities.BookEntity", "BookEntity")
+                    b.HasOne("books_store_DAL.Entities.BookEntity", "Book")
                         .WithMany()
-                        .HasForeignKey("BookEntityId")
+                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("books_store_DAL.Entities.GenreEntity", "GenreEntity")
+                    b.HasOne("books_store_DAL.Entities.GenreEntity", "Genre")
                         .WithMany()
-                        .HasForeignKey("GenreEntityId")
+                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BookEntity");
+                    b.Navigation("Book");
 
-                    b.Navigation("GenreEntity");
+                    b.Navigation("Genre");
                 });
 
             modelBuilder.Entity("books_store_DAL.Entities.GenreEntity", b =>
