@@ -66,9 +66,9 @@ namespace books_store_DAL.Repositories
             return await _context.Set<TEntity>()
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<IQueryable<TEntity>> GetAll()
+        public IQueryable<TEntity> GetAll()
         {
-            return _context.Set<TEntity>();
+            return _context.Set<TEntity>().AsNoTracking();
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using books_store_DAL;
 using books_store_DAL.Entities;
+using books_store_DAL.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,38 +12,50 @@ namespace books_store_api.Controllers
     public class AuthorController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public AuthorController(AppDbContext context)
+        private readonly AuthorRepository _authorRepository;
+        public AuthorController(AppDbContext context, AuthorRepository authorRepository)
         {
-            
+
             _context = context;
+            _authorRepository = authorRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var authors = await _context.Authors.ToListAsync();
+            var authors = await _authorRepository.Authors.ToListAsync();
             return Ok(authors);
         }
         [HttpPost]
         public async Task<IActionResult> Createtsync([FromBody]AuthorEntity entity)
         {
-            await _context.Authors.AddAsync(entity);
-            int result = await _context.SaveChangesAsync();
-            if (result == 0)
+            
+            bool result = await _authorRepository.CreateAsync(entity);
+            if (!result)
             {
-                return BadRequest("something went wrong!");
+                return BadRequest("couldn't add the author");
             }
             return Ok("Author has added successfuly");
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync()
+        public async Task<IActionResult> UpdateAsync([FromBody] AuthorEntity entity)
         {
-            return Ok("put");
+            bool result = await _authorRepository.UpdateAsync(entity);
+            if (!result)
+            {
+                return BadRequest("couldn't update the author");
+            }
+            return Ok("Author has updated successfuly");
         }
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync()
+        public async Task<IActionResult> DeleteAsync([FromQuery] int id)
         {
-            return Ok("delete");
+            bool result = await _authorRepository.DeleteAsync(id);
+            if (!result)
+            {
+                return BadRequest("couldn't deleted author");
+            }
+            return Ok("Author has deleted successfuly");
         }
 
     }
