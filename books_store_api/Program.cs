@@ -1,4 +1,5 @@
 using books_store_DAL;
+using books_store_DAL.Initializer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddControllers();
+
+// CORS - allowed to make queries from React.
+string corsPolicy = "allowAll";   //name can be different
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(corsPolicy, cfg =>
+    {
+        cfg.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
 
@@ -24,10 +39,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(corsPolicy);
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.SeedAsync().Wait();    
 
 app.Run();
