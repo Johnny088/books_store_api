@@ -1,10 +1,17 @@
 using books_store_DAL;
 using books_store_DAL.Initializer;
+using books_store_DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add Repositories
+builder.Services.AddScoped<AuthorRepository>();
+
 // Add services to the container.
+
+
+
 // adding dbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

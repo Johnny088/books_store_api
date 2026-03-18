@@ -4,9 +4,9 @@ using System.Text;
 
 namespace books_store_DAL.Entities
 {
-    public class BookEntity
+    public class BookEntity: BaseEntity
     {
-        public int Id { get; set; }
+       
         public required string Title { get; set; }
         public string? Description { get; set; }
         public string? Image { get; set; }
