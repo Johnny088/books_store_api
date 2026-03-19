@@ -11,12 +11,12 @@ namespace books_store_api.Controllers
     [Route("api/author")]  //our controller path
     public class AuthorController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        
         private readonly AuthorRepository _authorRepository;
         public AuthorController(AppDbContext context, AuthorRepository authorRepository)
         {
 
-            _context = context;
+            
             _authorRepository = authorRepository;
         }
 

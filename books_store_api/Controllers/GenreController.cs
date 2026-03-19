@@ -5,22 +5,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace books_store_api.Controllers
 {
+    [ApiController]
+    [Route("api/Genre")]
     public class GenreController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        
         private readonly GenreRepository _genreRepository;
 
-        public GenreController(AppDbContext context, GenreRepository genreRepository)
+        public GenreController(GenreRepository genreRepository)
         {
-            _context = context;
             _genreRepository = genreRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var result =  await _genreRepository.Genres.ToListAsync();
+            var result = await _genreRepository.Genres.ToListAsync();
+            return Ok(result);
+        }
+        [HttpGet("name")]
+        public async Task<IActionResult> GetByNameAsync([FromQuery] string name)
+        {
+            var result = await _genreRepository.GetByNameAsync(name);
             return Ok(result);
         }
     }
+    
+        
 }

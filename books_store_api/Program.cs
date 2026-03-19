@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Add Repositories
 builder.Services.AddScoped<AuthorRepository>();
-
+builder.Services.AddScoped<GenreRepository>();
+builder.Services.AddScoped<BookRepository>();
 // Add services to the container.
 
 
