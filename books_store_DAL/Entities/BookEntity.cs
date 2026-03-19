@@ -15,6 +15,6 @@ namespace books_store_DAL.Entities
         public int PublishedYear { get; set; } =  DateTime.UtcNow.Year;
         public int AuthorId { get; set; }
         public AuthorEntity? Author { get; set; }
-        public ICollection<GenreEntity>? Genres { get; set; } = new List<GenreEntity>();
+        public ICollection<GenreEntity> Genres { get; set; } = new List<GenreEntity>();
     }
 }

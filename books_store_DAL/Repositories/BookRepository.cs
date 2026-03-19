@@ -32,16 +32,25 @@ namespace books_store_DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<BookEntity>> getByGenreAsync(List<GenreEntity> genre)
+        public async Task<List<BookEntity>> GetByGenreAsync(string genre)
         {
 
             return await _context.Books
                 .AsNoTracking()
                 .Include(b => b.Genres)
-                .Where(b => b.Genres == genre)
+                .Where(b => b.Genres.Any(g => g.Name.ToLower() == genre.ToLower()))
+                .ToListAsync();
+        }
+        public async Task<List<BookEntity>> GetByAuthorAsync(string author)
+        {
+
+            return await _context.Books
+                .AsNoTracking()
+                .Include(b => b.Author)
+                .Where(b => b.Author.Name.ToLower() == author.ToLower())
                 .ToListAsync();
         }
 
 
-}
+    }
 }

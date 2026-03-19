@@ -22,16 +22,29 @@ namespace books_store_api.Controllers
         }
 
         [HttpGet("Year")]
-        public async Task<IActionResult> GetByYear(int year)
+        public async Task<IActionResult> GetByYear([FromQuery]int year)
         {
             var books = await _bookRepository.getByYearAsync(year);
             return Ok(books);
         }
 
         [HttpGet("Rating")]
-        public async Task<IActionResult> GetByRating(int rating)
+        public async Task<IActionResult> GetByRating([FromQuery]int rating)
         {
             var books = await _bookRepository.getByRatingAsync(rating);
+            return Ok(books);
+        }
+
+        [HttpGet("genres")]
+        public async Task<IActionResult> GetByGenres([FromQuery]string genre)
+        {
+            var books = await _bookRepository.GetByGenreAsync(genre);
+            return Ok(books);
+        }
+        [HttpGet("authors")]
+        public async Task<IActionResult> GetByAuthor([FromQuery]string author)
+        {
+            var books = await _bookRepository.GetByAuthorAsync(author);
             return Ok(books);
         }
     }
