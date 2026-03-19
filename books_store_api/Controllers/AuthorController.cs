@@ -1,4 +1,5 @@
-﻿using books_store_DAL;
+﻿using books_store_BLL.Dtos.Author;
+using books_store_DAL;
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -27,14 +28,14 @@ namespace books_store_api.Controllers
             return Ok(authors);
         }
         [HttpPost]
-        public async Task<IActionResult> Createtsync([FromBody]AuthorEntity entity)
+        public async Task<IActionResult> Createtsync([FromBody]CreateAuthorDto dto)
         {
             
-            bool result = await _authorRepository.CreateAsync(entity);
-            if (!result)
-            {
-                return BadRequest("couldn't add the author");
-            }
+            //bool result = await _authorRepository.CreateAsync(entity);
+            //if (!result)
+            //{
+            //    return BadRequest("couldn't add the author");
+            //}
             return Ok("Author has added successfuly");
         }
         [HttpPut]

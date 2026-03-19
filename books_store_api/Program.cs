@@ -1,3 +1,4 @@
+using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Initializer;
 using books_store_DAL.Repositories;
@@ -9,8 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<AuthorRepository>();
 builder.Services.AddScoped<GenreRepository>();
 builder.Services.AddScoped<BookRepository>();
-// Add services to the container.
 
+// Add services to the container.
+builder.Services.AddScoped<AuthorService>();
 
 
 // adding dbContext
