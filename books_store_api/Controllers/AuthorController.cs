@@ -27,10 +27,21 @@ namespace books_store_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var authors = await _authorRepository.Authors.ToListAsync();
+            
+            var authors = await _authorService.GetAllAsync();
             return Ok(authors);
         }
+        [HttpGet("{id}")]
 
+        public async Task<IActionResult> GetAsync([FromRoute] int id)
+        {
+            var result = await _authorService.GetByIdAsync(id);
+            if (result == null)
+            {
+                return BadRequest("Invalid ID: author wasn't found");
+            }
+            return Ok(result);
+        }
 
 
 
@@ -43,7 +54,7 @@ namespace books_store_api.Controllers
                 return BadRequest("couldn't add the author");
             }
             return Ok(result);
-            //return Ok($"Author '{result.Name}' has added successfuly");
+            
         }
 
 
@@ -51,24 +62,28 @@ namespace books_store_api.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] AuthorEntity entity)
+        
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateAuthorDto dto)
         {
-            bool result = await _authorRepository.UpdateAsync(entity);
-            if (!result)
+           
+            var result = await _authorService.UpdateAsync(dto);
+            if (result == null)
             {
                 return BadRequest("couldn't update the author");
             }
-            return Ok("Author has updated successfuly");
+            
+            return Ok(result);
         }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteAsync([FromQuery] int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            bool result = await _authorRepository.DeleteAsync(id);
-            if (!result)
+            
+            var result = await _authorService.DeleteAsync(id);
+            if (result == null)
             {
                 return BadRequest("couldn't deleted author");
             }
-            return Ok("Author has deleted successfuly");
+            return Ok(result);
         }
 
     }
