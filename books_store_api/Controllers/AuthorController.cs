@@ -1,4 +1,5 @@
 ﻿using books_store_BLL.Dtos.Author;
+using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
@@ -14,11 +15,13 @@ namespace books_store_api.Controllers
     {
         
         private readonly AuthorRepository _authorRepository;
-        public AuthorController(AppDbContext context, AuthorRepository authorRepository)
+        private readonly AuthorService _authorService;
+        public AuthorController(AppDbContext context, AuthorRepository authorRepository, AuthorService authorService)
         {
 
-            
+
             _authorRepository = authorRepository;
+            _authorService = authorService;
         }
 
         [HttpGet]
@@ -27,17 +30,26 @@ namespace books_store_api.Controllers
             var authors = await _authorRepository.Authors.ToListAsync();
             return Ok(authors);
         }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> Createtsync([FromBody]CreateAuthorDto dto)
         {
-            
-            //bool result = await _authorRepository.CreateAsync(entity);
-            //if (!result)
-            //{
-            //    return BadRequest("couldn't add the author");
-            //}
-            return Ok("Author has added successfuly");
+            var result = await _authorService.CreateAsync(dto);
+            if (result == null)
+            {
+                return BadRequest("couldn't add the author");
+            }
+            return Ok(result);
+            //return Ok($"Author '{result.Name}' has added successfuly");
         }
+
+
+
+
+
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] AuthorEntity entity)
         {
