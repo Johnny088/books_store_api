@@ -1,4 +1,5 @@
-﻿using books_store_BLL.Dtos.Author;
+﻿using books_store_api.Controllers.Extensions;
+using books_store_BLL.Dtos.Author;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Entities;
@@ -28,62 +29,42 @@ namespace books_store_api.Controllers
         public async Task<IActionResult> GetAsync()
         {
             
-            var authors = await _authorService.GetAllAsync();
-            return Ok(authors);
+            var response = await _authorService.GetAllAsync();
+            return this.GetAction(response);
+            
         }
         [HttpGet("{id}")]
 
         public async Task<IActionResult> GetAsync([FromRoute] int id)
         {
-            var result = await _authorService.GetByIdAsync(id);
-            if (result == null)
-            {
-                return BadRequest("Invalid ID: author wasn't found");
-            }
-            return Ok(result);
+            var response = await _authorService.GetByIdAsync(id);
+            return this.GetAction(response);
+
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> Createtsync([FromBody]CreateAuthorDto dto)
         {
-            var result = await _authorService.CreateAsync(dto);
-            if (result == null)
-            {
-                return BadRequest("couldn't add the author");
-            }
-            return Ok(result);
-            
+            var response = await _authorService.CreateAsync(dto);
+
+            return this.GetAction(response);
+
         }
-
-
-
-
 
         [HttpPut]
         
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateAuthorDto dto)
         {
            
-            var result = await _authorService.UpdateAsync(dto);
-            if (result == null)
-            {
-                return BadRequest("couldn't update the author");
-            }
-            
-            return Ok(result);
+            var response = await _authorService.UpdateAsync(dto);
+            return this.GetAction(response);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             
-            var result = await _authorService.DeleteAsync(id);
-            if (result == null)
-            {
-                return BadRequest("couldn't deleted author");
-            }
-            return Ok(result);
+            var response = await _authorService.DeleteAsync(id);
+            return this.GetAction(response);
         }
 
     }
