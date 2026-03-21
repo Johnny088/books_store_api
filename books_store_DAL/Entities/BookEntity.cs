@@ -7,7 +7,7 @@ namespace books_store_DAL.Entities
     public class BookEntity: BaseEntity
     {
        
-        public required string Title { get; set; }
+        public required string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? Image { get; set; }
         public float Rating { get; set; } = 0f;

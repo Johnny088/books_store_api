@@ -13,6 +13,7 @@ builder.Services.AddScoped<BookRepository>();
 
 // Add services to the container.
 builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<BookService>();
 
 
 // adding dbContext

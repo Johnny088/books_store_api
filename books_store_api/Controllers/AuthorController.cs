@@ -15,13 +15,10 @@ namespace books_store_api.Controllers
     public class AuthorController : ControllerBase
     {
         
-        private readonly AuthorRepository _authorRepository;
+       
         private readonly AuthorService _authorService;
-        public AuthorController(AppDbContext context, AuthorRepository authorRepository, AuthorService authorService)
-        {
-
-
-            _authorRepository = authorRepository;
+        public AuthorController( AuthorService authorService)
+        {   
             _authorService = authorService;
         }
 

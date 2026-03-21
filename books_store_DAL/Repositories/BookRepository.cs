@@ -23,14 +23,14 @@ namespace books_store_DAL.Repositories
                 .AsNoTracking()
                 .Where(b => b.PublishedYear == year)
                 .ToListAsync();
-        }
+        }//+
         public async Task<List<BookEntity>> getByRatingAsync(int rating)
         {
             return await _context.Books
                 .AsNoTracking()
                 .Where(b => b.Rating == rating)
                 .ToListAsync();
-        }
+        }//+
 
         public async Task<List<BookEntity>> GetByGenreAsync(string genre)
         {
