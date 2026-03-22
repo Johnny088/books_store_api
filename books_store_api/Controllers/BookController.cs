@@ -1,4 +1,5 @@
 ﻿using books_store_api.Controllers.Extensions;
+using books_store_api.Settings;
 using books_store_BLL.Dtos.Book;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL.Repositories;
@@ -13,11 +14,15 @@ namespace books_store_api.Controllers
     {
         private readonly BookRepository _bookRepository;
         public readonly BookService _bookService;
+        private readonly string _booksPath;
 
-        public BookController(BookRepository bookRepository, BookService bookService)
+        public BookController(BookRepository bookRepository, BookService bookService, IWebHostEnvironment environment)
         {
             _bookRepository = bookRepository;
             _bookService = bookService;
+            string rootPath = environment.ContentRootPath;
+            _booksPath = Path.Combine(rootPath, StaticFilesSetting.StorageDir, StaticFilesSetting.BooksDir);
+            
         }
         [HttpGet]
         public async Task<IActionResult> GetAsync()
@@ -54,22 +59,22 @@ namespace books_store_api.Controllers
         }//----------
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateBookDto dto)
+        public async Task<IActionResult> CreateAsync([FromForm] CreateBookDto dto)
         {
-            var response = await _bookService.CreateAsync(dto);
+            var response = await _bookService.CreateAsync(dto, _booksPath);
             return this.GetAction(response);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody]UpdateBookDto dto)
+        public async Task<IActionResult> UpdateAsync([FromForm]UpdateBookDto dto)
         {
-            var response = await _bookService.UpdateAsync(dto);
+            var response = await _bookService.UpdateAsync(dto, _booksPath);
             return this.GetAction(response);
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteAsync([FromQuery]int id)
         {
-            var response = await _bookService.DeleteAsync(id);
+            var response = await _bookService.DeleteAsync(id, _booksPath);
             return this.GetAction(response);
         }
         [HttpGet("id")]

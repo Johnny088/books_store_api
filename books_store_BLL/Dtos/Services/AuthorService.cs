@@ -28,6 +28,8 @@ namespace books_store_BLL.Dtos.Services
                 Name = dto.Name,
                 BirthDate = dto.BirthDate,
             };
+
+
             if(dto.Image != null && !string.IsNullOrEmpty(imagesPath))
             {
               ServiceResponse response = await _imageService.SaveAsync(dto.Image, imagesPath);
@@ -130,7 +132,7 @@ namespace books_store_BLL.Dtos.Services
                 };
             }
 
-            if (!string.IsNullOrEmpty(imagesPath))
+            if (entity.Image != null && !string.IsNullOrEmpty(imagesPath))
             {
                 string imagePath = Path.Combine(imagesPath, entity.Image);
                 var response = _imageService.Delete(imagePath);
