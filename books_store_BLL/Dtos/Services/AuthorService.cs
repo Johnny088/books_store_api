@@ -2,6 +2,7 @@
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -12,20 +13,30 @@ namespace books_store_BLL.Dtos.Services
     public class AuthorService
     {
         private readonly AuthorRepository _authorRepository;
+        private readonly ImageService _imageService;
 
-        public AuthorService(AuthorRepository authorRepository)
+        public AuthorService(AuthorRepository authorRepository, ImageService imageService)
         {
             _authorRepository = authorRepository;
+            _imageService = imageService;
         }
 
-        public async Task<ServiceResponse> CreateAsync(CreateAuthorDto dto)
+        public async Task<ServiceResponse> CreateAsync(CreateAuthorDto dto, string imagesPath)
         {
             var entity = new AuthorEntity
             {
                 Name = dto.Name,
                 BirthDate = dto.BirthDate,
-                Image = dto.Image,
             };
+            if(dto.Image != null && !string.IsNullOrEmpty(imagesPath))
+            {
+              ServiceResponse response = await _imageService.SaveAsync(dto.Image, imagesPath);
+              if(!response.Success)
+                {
+                    return response;
+                }
+                entity.Image = response.Payload!.ToString()!;
+            }
             bool result = await _authorRepository.CreateAsync(entity);
             if (!result)
             {
@@ -51,7 +62,7 @@ namespace books_store_BLL.Dtos.Services
             };
 
         }
-        public async Task<ServiceResponse> UpdateAsync(UpdateAuthorDto dto)
+        public async Task<ServiceResponse> UpdateAsync(UpdateAuthorDto dto, string imagesPath)
         {
             var entity = await _authorRepository.GetByIdAsync(dto.Id);
             if ( entity == null)
@@ -65,7 +76,28 @@ namespace books_store_BLL.Dtos.Services
             string oldName = entity.Name;
             entity.Name = dto.Name;
             entity.BirthDate = dto.BirthDate;
-            entity.Image = dto.Image;
+            
+
+
+            if (dto.Image != null && !string.IsNullOrEmpty(imagesPath))
+            {
+                if(!string.IsNullOrEmpty(entity.Image))
+                {
+                    string imagePath = Path.Combine(imagesPath, entity.Image);
+                    var deleteResponse = _imageService.Delete(imagePath);
+                    if (!deleteResponse.Success)
+                    {
+                        return deleteResponse;
+                    }
+
+                }
+                ServiceResponse saveResponse = await _imageService.SaveAsync(dto.Image, imagesPath);
+                if (!saveResponse.Success)
+                {
+                    return saveResponse;
+                }
+                entity.Image = saveResponse.Payload!.ToString();
+            }
 
             var result = await _authorRepository.UpdateAsync(entity);
             if (result) 
@@ -86,7 +118,7 @@ namespace books_store_BLL.Dtos.Services
             }
             
         }
-        public async Task<ServiceResponse> DeleteAsync(int id)
+        public async Task<ServiceResponse> DeleteAsync(int id, string imagesPath)
         {
             var entity = await _authorRepository.GetByIdAsync(id);
             if (entity == null)
@@ -97,6 +129,18 @@ namespace books_store_BLL.Dtos.Services
                     Message = $"Invalid id: the author wasn't found"
                 };
             }
+
+            if (!string.IsNullOrEmpty(imagesPath))
+            {
+                string imagePath = Path.Combine(imagesPath, entity.Image);
+                var response = _imageService.Delete(imagePath);
+                if (!response.Success)
+                {
+                    return response;
+                }
+            }
+            
+
             var result = await _authorRepository.DeleteAsync(entity);
             if (result)
             {
@@ -147,7 +191,7 @@ namespace books_store_BLL.Dtos.Services
         public async Task<ServiceResponse> GetAllAsync()
         {
             var dtos = await _authorRepository.Authors
-                .Select(a => new AuthorDto { Name = a.Name, BirthDate = a.BirthDate, Image = a.Image, Id = a.Id})
+                .Select(a => new AuthorDto { Name = a.Name, BirthDate = a.BirthDate,Image = a.Image, Id = a.Id})
                 .ToListAsync();
             return new ServiceResponse
             {

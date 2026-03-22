@@ -1,4 +1,5 @@
 ﻿using books_store_api.Controllers.Extensions;
+using books_store_api.Settings;
 using books_store_BLL.Dtos.Author;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
@@ -17,9 +18,13 @@ namespace books_store_api.Controllers
         
        
         private readonly AuthorService _authorService;
-        public AuthorController( AuthorService authorService)
-        {   
+        private readonly string _authorPath;
+        public AuthorController(AuthorService authorService, IWebHostEnvironment enviroment)
+        {
             _authorService = authorService;
+
+            string rootPath = enviroment.ContentRootPath;
+            _authorPath = Path.Combine(rootPath, StaticFilesSetting.StorageDir, StaticFilesSetting.AuthorsDir);
         }
 
         [HttpGet]
@@ -40,9 +45,11 @@ namespace books_store_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Createtsync([FromBody]CreateAuthorDto dto)
+        public async Task<IActionResult> Createtsync([FromForm]CreateAuthorDto dto)
         {
-            var response = await _authorService.CreateAsync(dto);
+           
+
+            var response = await _authorService.CreateAsync(dto, _authorPath);
 
             return this.GetAction(response);
 
@@ -50,17 +57,17 @@ namespace books_store_api.Controllers
 
         [HttpPut]
         
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateAuthorDto dto)
+        public async Task<IActionResult> UpdateAsync([FromForm] UpdateAuthorDto dto)
         {
            
-            var response = await _authorService.UpdateAsync(dto);
+            var response = await _authorService.UpdateAsync(dto, _authorPath);
             return this.GetAction(response);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             
-            var response = await _authorService.DeleteAsync(id);
+            var response = await _authorService.DeleteAsync(id, _authorPath);
             return this.GetAction(response);
         }
 
