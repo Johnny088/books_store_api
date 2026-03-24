@@ -16,9 +16,16 @@ namespace books_store_DAL.Repositories
             _context = appDbContext;
         }
         public IQueryable<GenreEntity> Genres => GetAll();
+        
         public async Task<GenreEntity?> GetByNameAsync(string name)
         {
             return await Genres.FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
+            
+        }
+        public async Task<bool> IsExistAsync(string name) 
+        {
+           var res = Genres.Any(g => g.Name.ToLower() == name.ToLower());
+            return res;
         }
     }
 }

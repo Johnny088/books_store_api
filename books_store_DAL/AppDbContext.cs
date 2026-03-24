@@ -22,6 +22,7 @@ namespace books_store_DAL
             modelBuilder.Entity<BookEntity>().Property(b => b.Title).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<AuthorEntity>().Property(a => a.Name).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<GenreEntity>().Property(g => g.Name).IsRequired().HasMaxLength(100);
+            modelBuilder.Entity<AuthorEntity>().Property(a => a.Country).HasMaxLength(50);
 
             modelBuilder.Entity<GenreEntity>().HasIndex(g => g.Name).IsUnique();
 

@@ -10,6 +10,7 @@ namespace books_store_DAL.Entities
         public required string Name { get; set; }
         public DateTime BirthDate { get; set; }
         public string? Image { get; set; }
+        public string? Country { get; set; }
         public IEnumerable<BookEntity> Books {  get; set; } = new List<BookEntity>();
     }
 }

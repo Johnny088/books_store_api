@@ -26,7 +26,7 @@ namespace books_store_api.Controllers
             string rootPath = enviroment.ContentRootPath;
             _authorPath = Path.Combine(rootPath, StaticFilesSetting.StorageDir, StaticFilesSetting.AuthorsDir);
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
@@ -45,7 +45,7 @@ namespace books_store_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Createtsync([FromForm]CreateAuthorDto dto)
+        public async Task<IActionResult> CreateAsync([FromForm]CreateAuthorDto dto)
         {
            
 

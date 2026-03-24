@@ -10,6 +10,7 @@ namespace books_store_BLL.Dtos.Author
         public int Id { get; set; }
         public string  Name { get; set; } = string.Empty;
         public DateTime BirthDate {  get; set; }
+        public string? Country { get; set; }
         public string? Image { get; set; }
     }
 }

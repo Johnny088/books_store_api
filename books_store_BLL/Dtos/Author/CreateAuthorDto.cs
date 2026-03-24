@@ -11,6 +11,7 @@ namespace books_store_BLL.Dtos.Author
         [Required]
         public string Name { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; } = DateTime.UtcNow;
+        public string? Country { get; set; }
         public IFormFile? Image {  get; set; }
     }
 }

@@ -1,8 +1,10 @@
-﻿using books_store_BLL.Dtos.Author;
+﻿using AutoMapper;
+using books_store_BLL.Dtos.Author;
+using books_store_BLL.Dtos.Genre;
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -14,21 +16,23 @@ namespace books_store_BLL.Dtos.Services
     {
         private readonly AuthorRepository _authorRepository;
         private readonly ImageService _imageService;
+        private readonly IMapper _mapper;
 
-        public AuthorService(AuthorRepository authorRepository, ImageService imageService)
+        public AuthorService(AuthorRepository authorRepository, ImageService imageService, IMapper mapper)
         {
             _authorRepository = authorRepository;
             _imageService = imageService;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResponse> CreateAsync(CreateAuthorDto dto, string imagesPath)
         {
-            var entity = new AuthorEntity
-            {
-                Name = dto.Name,
-                BirthDate = dto.BirthDate,
-            };
-
+            //var entity = new AuthorEntity
+            //{
+            //    Name = dto.Name,
+            //    BirthDate = dto.BirthDate,
+            //};
+            var entity = _mapper.Map<AuthorEntity>(dto);
 
             if(dto.Image != null && !string.IsNullOrEmpty(imagesPath))
             {
@@ -54,13 +58,14 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = $"The author {entity.Name} was added successfuly",
-                Payload = new AuthorDto
-                {
-                    Id = entity.Id,
-                    Name = entity.Name,
-                    BirthDate = entity.BirthDate,
-                    Image = entity.Image,
-                }
+                //Payload = new AuthorDto
+                //{
+                //    Id = entity.Id,
+                //    Name = entity.Name,
+                //    BirthDate = entity.BirthDate,
+                //    Image = entity.Image,
+                //}
+                Payload = _mapper.Map<AuthorDto>(entity)
             };
 
         }
@@ -76,8 +81,7 @@ namespace books_store_BLL.Dtos.Services
                 };
             }
             string oldName = entity.Name;
-            entity.Name = dto.Name;
-            entity.BirthDate = dto.BirthDate;
+            entity = _mapper.Map<UpdateAuthorDto, AuthorEntity>(dto, entity);
             
 
 
@@ -107,7 +111,8 @@ namespace books_store_BLL.Dtos.Services
                 return new ServiceResponse
                 {
                     Success = true,
-                    Message = $"The Author {oldName} was updated successfuly"
+                    Message = $"The Author {oldName} was updated successfuly",
+                    Payload = _mapper.Map<AuthorDto>(entity)
                 };
             }
             else 
@@ -150,13 +155,14 @@ namespace books_store_BLL.Dtos.Services
                 {
                     Success = true,
                     Message = $"The author {entity.Name} was removed successfuly",
-                    Payload = new AuthorDto
-                    {
-                        Id = entity.Id,
-                        Name = entity.Name,
-                        BirthDate = entity.BirthDate,
-                        Image = entity.Image
-                    }
+                    //Payload = new AuthorDto
+                    //{
+                    //    Id = entity.Id,
+                    //    Name = entity.Name,
+                    //    BirthDate = entity.BirthDate,
+                    //    Image = entity.Image
+                    //}
+                    Payload = _mapper.Map<AuthorDto>(entity)
                 };
             }
             return new ServiceResponse
@@ -180,21 +186,24 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = "The author is got successfuly",
-                Payload = new AuthorDto
-                {
-                    Id = entity.Id,
-                    Name = entity.Name,
-                    BirthDate = entity.BirthDate,
-                    Image = entity.Image,
-                }
+                Payload = _mapper.Map<AuthorDto>(entity)
             };
         }
 
         public async Task<ServiceResponse> GetAllAsync()
         {
-            var dtos = await _authorRepository.Authors
-                .Select(a => new AuthorDto { Name = a.Name, BirthDate = a.BirthDate,Image = a.Image, Id = a.Id})
-                .ToListAsync();
+            //var dtos = await _authorRepository.Authors
+            //    .Select(a => new AuthorDto { Name = a.Name, BirthDate = a.BirthDate,Image = a.Image, Id = a.Id})
+            //    .ToListAsync();
+            //return new ServiceResponse
+            //{
+            //    Success = true,
+            //    Message = "Authors are got successfuly",
+            //    Payload = dtos
+            //};
+            
+            var entities = await _authorRepository.Authors.ToListAsync();
+            var dtos = _mapper.Map<List<AuthorDto>>(entities);
             return new ServiceResponse
             {
                 Success = true,
