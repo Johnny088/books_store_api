@@ -27,11 +27,7 @@ namespace books_store_BLL.Dtos.Services
 
         public async Task<ServiceResponse> CreateAsync(CreateAuthorDto dto, string imagesPath)
         {
-            //var entity = new AuthorEntity
-            //{
-            //    Name = dto.Name,
-            //    BirthDate = dto.BirthDate,
-            //};
+            
             var entity = _mapper.Map<AuthorEntity>(dto);
 
             if(dto.Image != null && !string.IsNullOrEmpty(imagesPath))
@@ -58,13 +54,7 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = $"The author {entity.Name} was added successfuly",
-                //Payload = new AuthorDto
-                //{
-                //    Id = entity.Id,
-                //    Name = entity.Name,
-                //    BirthDate = entity.BirthDate,
-                //    Image = entity.Image,
-                //}
+                
                 Payload = _mapper.Map<AuthorDto>(entity)
             };
 

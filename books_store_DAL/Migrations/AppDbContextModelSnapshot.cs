@@ -76,7 +76,7 @@ namespace books_store_DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuthorId")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreateDate")
@@ -152,9 +152,7 @@ namespace books_store_DAL.Migrations
                 {
                     b.HasOne("books_store_DAL.Entities.AuthorEntity", "Author")
                         .WithMany("Books")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });

@@ -1,4 +1,5 @@
-﻿using books_store_BLL.Dtos.Book;
+﻿using AutoMapper;
+using books_store_BLL.Dtos.Book;
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,21 +15,16 @@ namespace books_store_BLL.Dtos.Services
     {
         private readonly BookRepository _bookRepository;
         private readonly ImageService _imageService;
-        public BookService(BookRepository bookRepository, ImageService imageService)
+        private readonly IMapper _mapper;
+        public BookService(BookRepository bookRepository, ImageService imageService, IMapper mapper)
         {
             _bookRepository = bookRepository;
             _imageService = imageService;
+            _mapper = mapper;
         }
         public async Task<ServiceResponse> CreateAsync(CreateBookDto dto, string imagesPath)
         {
-            var entity = new BookEntity
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                Rating = dto.Rating,
-                Pages = dto.Pages,
-                PublishedYear = dto.PublishedYear
-            };
+            var entity =  _mapper.Map<BookEntity>(dto);
 
             if (dto.Image != null && !string.IsNullOrEmpty(imagesPath))
             {
@@ -55,19 +51,10 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = $"the book '{entity.Title}' was added successfuly",
-                Payload = new BookDto
-                {
-                    Id = entity.Id,
-                    Title = dto.Title,
-                    Description = dto.Description,
-                    Image = entity.Image,
-                    Rating = dto.Rating,
-                    Pages = dto.Pages,
-                    PublishedYear = dto.PublishedYear
-                }
+                Payload = _mapper.Map<BookDto>(entity)
             };
 
-        }//?????????
+        }//+
         public async Task<ServiceResponse> UpdateAsync(UpdateBookDto dto, string imagesPath)
         {
             var entity = await _bookRepository.GetByIdAsync(dto.Id);
@@ -80,12 +67,8 @@ namespace books_store_BLL.Dtos.Services
                 };
             }
             string oldTitle = entity.Title;
-            entity.Title = dto.Title;
-            entity.Description = dto.Description;
-            //entity.Image = dto.Image;
-            entity.Rating = dto.Rating;
-            entity.Pages = dto.Pages;
-            entity.PublishedYear = dto.PublishedYear;
+            entity = _mapper.Map(dto, entity);
+
 
             if(dto.Image != null && !string.IsNullOrEmpty(imagesPath))
             {
@@ -118,9 +101,10 @@ namespace books_store_BLL.Dtos.Services
             return new ServiceResponse
             {
                 Success = true,
-                Message = $"the book '{oldTitle}' has updated successfuly"
+                Message = $"the book '{oldTitle}' has updated successfuly",
+                Payload = _mapper.Map<BookDto>(entity)
             };
-        }// ?????????
+        }// +
         public async Task<ServiceResponse> DeleteAsync(int id, string imagesPath)
         {
             var entity = await _bookRepository.GetByIdAsync(id);
@@ -155,19 +139,9 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = $"the book '{entity.Title}' was deleted succesfully",
-                Payload = new BookDto
-                {
-                    Id = entity.Id,
-                    Title = entity.Title,
-                    Description = entity.Description,
-                    Image = entity.Image,
-                    Rating = entity.Rating,
-                    Pages = entity.Pages,
-                    PublishedYear = entity.PublishedYear,
-
-                }
+                Payload = _mapper.Map<BookDto>(entity)
             };
-        }//???????????
+        }//+
         public async Task<ServiceResponse> GetByIdAsync(int id)
         {
             var entity = await _bookRepository.GetByIdAsync(id);
@@ -183,33 +157,15 @@ namespace books_store_BLL.Dtos.Services
             {
                 Success = true,
                 Message = $"the book '{entity.Title}' is got successfuly",
-                Payload = new BookDto
-                {
-                    Id=entity.Id,
-                    Title = entity.Title,
-                    Description = entity.Description,
-                    Image = entity.Image,
-                    Rating = entity.Rating,
-                    Pages = entity.Pages,
-                    PublishedYear = entity.PublishedYear,
-                }
-                
+                Payload = _mapper.Map<BookDto>(entity)
+
             };
 
-        }//?????????????????
+        }//+
         public async Task<ServiceResponse> GetAllAsync()
         {
-            var dtos =  await _bookRepository.Books
-                .Select(b => new BookDto
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    Description = b.Description,
-                    Image = b.Image,
-                    Rating = b.Rating,
-                    Pages = b.Pages,
-                    PublishedYear = b.PublishedYear,
-                }).ToListAsync();
+            var entities = await _bookRepository.Books.ToListAsync();
+            var dtos = _mapper.Map<List<BookDto>>(entities);
             return new ServiceResponse
             {
                 Success = true,
@@ -221,16 +177,7 @@ namespace books_store_BLL.Dtos.Services
         public async Task<ServiceResponse> GetByYearAsync(int year)
         {
             var response = await _bookRepository.getByYearAsync(year);
-             var dtos = response.Select(b => new BookDto
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    Description = b.Description,
-                    Image = b.Image,
-                    Rating = b.Rating,
-                    Pages = b.Pages,
-                    PublishedYear = b.PublishedYear,
-                }).ToList();
+             var dtos = _mapper.Map<List<BookDto>>(response);
             if (dtos.Count == 0)
             {
                 return new ServiceResponse
@@ -250,16 +197,7 @@ namespace books_store_BLL.Dtos.Services
         public async Task<ServiceResponse> GetByRatingAsync(int rating)
         {
             var response = await _bookRepository.getByRatingAsync(rating);
-            var dtos = response.Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Description = b.Description,
-                Image = b.Image,
-                Rating = b.Rating,
-                Pages = b.Pages,
-                PublishedYear = b.PublishedYear,
-            }).ToList();
+            var dtos = _mapper.Map<List<BookDto>>(response);
             if (dtos.Count == 0)
             {
                 return new ServiceResponse
@@ -278,16 +216,7 @@ namespace books_store_BLL.Dtos.Services
         public async Task<ServiceResponse> GetByGenresAsync(string genre)
         {
             var response = await _bookRepository.GetByGenreAsync(genre);
-            var dtos = response.Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Description = b.Description,
-                Image = b.Image,
-                Rating = b.Rating,
-                Pages = b.Pages,
-                PublishedYear = b.PublishedYear,
-            }).ToList();
+            var dtos = _mapper.Map<List<BookDto>>(response);
             if (dtos.Count == 0)
             {
                 return new ServiceResponse
