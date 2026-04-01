@@ -1,8 +1,10 @@
 using books_store_api.Settings;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
+using books_store_DAL.Entities.identity;
 using books_store_DAL.Initializer;
 using books_store_DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
@@ -18,6 +20,7 @@ builder.Services.AddScoped<AuthorService>();
 builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GenreService>();
+builder.Services.AddScoped<AuthService>();
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => {
@@ -31,6 +34,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     string connectionString = builder.Configuration.GetConnectionString("LocalDb")!;  // ? or !
     options.UseNpgsql(connectionString);
 });
+//add identity
+builder.Services.AddIdentity<AppUserEntity, AppRoleEntity>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+
+    options.Password.RequiredUniqueChars = 1;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
+})
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 
@@ -67,7 +84,15 @@ app.UseHttpsRedirection();
 string root = app.Environment.ContentRootPath;
 string storagePath = Path.Combine(root, StaticFilesSetting.StorageDir);
 string booksPath = Path.Combine(storagePath, StaticFilesSetting.BooksDir);
+if (!Directory.Exists(booksPath))
+{
+    Directory.CreateDirectory(booksPath); 
+}
 string authorsPath = Path.Combine(storagePath, StaticFilesSetting.AuthorsDir);
+if (!Directory.Exists(authorsPath))
+{
+    Directory.CreateDirectory(authorsPath);
+}
 
 app.UseStaticFiles(new StaticFileOptions
 {

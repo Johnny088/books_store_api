@@ -1,10 +1,13 @@
 ﻿using books_store_DAL.Entities;
+using books_store_DAL.Entities.identity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 
 namespace books_store_DAL.Initializer
@@ -15,9 +18,59 @@ namespace books_store_DAL.Initializer
         {
             using var scope = app.ApplicationServices.CreateScope(); // create scope
             using var context = scope.ServiceProvider.GetRequiredService<AppDbContext>(); // get _context
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUserEntity>>();
+            using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRoleEntity>>(); 
 
             await context.Database.MigrateAsync();
+            //Roles
+            
+            if (!roleManager.Roles.Any())
+            {
+                var adminRole = new AppRoleEntity
+                {
+                    Name = "admin"
+                };
+                var userRole = new AppRoleEntity
+                {
+                    Name = "user"
+                };
+                await roleManager.CreateAsync(adminRole);
+                await roleManager.CreateAsync(userRole);
+            }
+            //Users 
+            if (await userManager.FindByEmailAsync("admin@gmail.com") == null && await userManager.FindByNameAsync("admin") == null)
+            {
+                var admin = new AppUserEntity
+                {
+                    Name = "admin",
+                    UserName = "admin",
+                    Email = "admin@gmail.com",
+                    EmailConfirmed = true,
+                    LastName = "admin"
+                };
+                var result = await userManager.CreateAsync(admin, "qwerty");
+                
+                await userManager.AddToRoleAsync(admin, "admin");
 
+            }
+
+            if (await userManager.FindByEmailAsync("user@gmail.com") == null && await userManager.FindByNameAsync("user") == null)
+            {
+                var user = new AppUserEntity
+                {
+                    Name = "user",
+                    UserName = "user",
+                    Email = "user@gmail.com",
+                    EmailConfirmed = true,
+                    LastName = "user"
+                };
+                await userManager.CreateAsync(user, "qwerty");
+                await userManager.AddToRoleAsync(user, "user");
+            }
+
+
+
+            //Genre books Authors
             var genres = new List<GenreEntity>();
             if (!context.Genres.Any())
             {
