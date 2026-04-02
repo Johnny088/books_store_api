@@ -1,12 +1,16 @@
 using books_store_api.Settings;
 using books_store_BLL.Dtos.Services;
+using books_store_BLL.Settings;
 using books_store_DAL;
 using books_store_DAL.Entities.identity;
 using books_store_DAL.Initializer;
 using books_store_DAL.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +25,11 @@ builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<JwtService>();
+
+// Settings
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSetting"));
+
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => {
@@ -66,6 +75,33 @@ builder.Services.AddCors(opt =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
 
+//add authentification
+string? secretKey = builder.Configuration["JwtSettings:SecretKey"];
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new ArgumentException("Jwt secret key is null");
+}
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        RequireExpirationTime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidateLifetime = true,
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -106,7 +142,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = StaticFilesSetting.AuthorUrl
 });
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

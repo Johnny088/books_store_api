@@ -3,22 +3,21 @@ using books_store_BLL.Dtos.Genre;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace books_store_api.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/Genre")]
     public class GenreController : ControllerBase
     {
         
-        //private readonly GenreRepository _genreRepository;
-
-        //public GenreController(GenreRepository genreRepository)
-        //{
-        //    _genreRepository = genreRepository;
-        //}
+        
         private readonly GenreService _genreService;
 
         public GenreController(GenreService genreService)

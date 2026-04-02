@@ -10,10 +10,12 @@ namespace books_store_BLL.Dtos.Services
     public class AuthService
     {
         private readonly UserManager<AppUserEntity> _userManager;
+        private readonly JwtService _jwtService;
 
-        public AuthService(UserManager<AppUserEntity> userManager)
+        public AuthService(UserManager<AppUserEntity> userManager, JwtService jwtService)
         {
             _userManager = userManager;
+            _jwtService = jwtService;
         }
 
         public async Task<ServiceResponse> RegisterAsync(RegisterDto dto)
@@ -79,11 +81,12 @@ namespace books_store_BLL.Dtos.Services
                     Message = $"The password is incorrect"
                 };
             }
+            string jwtToken = _jwtService.GenerateAccessToken(entity);
             return new ServiceResponse
             {
                 Success = true,
                 Message = "Successful login",
-                Payload = null
+                Payload = jwtToken
             };
         }
 
