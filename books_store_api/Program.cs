@@ -28,7 +28,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 
 // Settings
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSetting"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 
 // add automapper
