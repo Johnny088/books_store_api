@@ -81,7 +81,7 @@ namespace books_store_BLL.Dtos.Services
                     Message = $"The password is incorrect"
                 };
             }
-            string jwtToken = _jwtService.GenerateAccessToken(entity);
+            string jwtToken = await _jwtService.GenerateAccessToken(entity);
             return new ServiceResponse
             {
                 Success = true,
