@@ -12,22 +12,27 @@ using System.IdentityModel.Tokens.Jwt;
 namespace books_store_api.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/Genre")]
     public class GenreController : ControllerBase
     {
         
         
         private readonly GenreService _genreService;
+        private readonly ILogger<GenreController> _logger;
 
-        public GenreController(GenreService genreService)
+        public GenreController(GenreService genreService, ILogger<GenreController> logger)
         {
             _genreService = genreService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
+            _logger.LogInformation(2000, $"{DateTime.Now} Get all genres request");
+           
+
             var result = await _genreService.GetAllAsync();
             return this.GetAction(result);
         }

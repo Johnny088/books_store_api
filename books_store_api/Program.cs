@@ -1,3 +1,4 @@
+using books_store_api.Middlewares;
 using books_store_api.Settings;
 using books_store_BLL.Dtos.Services;
 using books_store_BLL.Settings;
@@ -13,6 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 //Add Repositories
 builder.Services.AddScoped<AuthorRepository>();
@@ -103,6 +106,10 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+//custom middleware
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<LogMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
