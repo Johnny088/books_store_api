@@ -10,9 +10,11 @@ namespace books_store_api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
-        public AuthController(AuthService authService)
+        private readonly JwtService _JwtService;
+        public AuthController(AuthService authService, JwtService jwtService)
         {
             _authService = authService;
+            _JwtService = jwtService;
         }
 
         [HttpPost("register")]
@@ -27,6 +29,14 @@ namespace books_store_api.Controllers
            var response = await _authService.LoginAsync(dto);
             return this.GetAction(response);
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshAsync([FromBody] string refreshToken)
+        {
+            var response = await _JwtService.RefreshAsync(refreshToken);
+            return this.GetAction(response);
+        }
+
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string uid, [FromQuery] string t)
         {

@@ -1,3 +1,4 @@
+using books_store_api.infrastructure.jobs;
 using books_store_api.Middlewares;
 using books_store_api.Settings;
 using books_store_BLL.Dtos.Services;
@@ -15,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 //using Swashbuckle.AspNetCore;
 //using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi;
+using Quartz;
 using Serilog;
 using System.Text;
 
@@ -44,12 +46,26 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 // Serilog
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("/logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
+//Quartz
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("LogCleaningJob");
+    q.AddJob<LogCleaningJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("SendEmailJob-trigger")
+        .WithCronSchedule("0 0 18 * * ?")
+    );
+});
+
+builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => {

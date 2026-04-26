@@ -13,7 +13,7 @@ namespace books_store_DAL
         public DbSet<BookEntity> Books { get; set; }
         public DbSet<AuthorEntity> Authors { get; set; }
         public DbSet<GenreEntity> Genres { get; set; }
-        public DbSet<RefreshTOkenEntity> RefreshTokens { get; set; }
+        public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         //public DbSet<BookGenreEntity> BookGenres {  get; set; }
         public AppDbContext(DbContextOptions options)
             : base(options)

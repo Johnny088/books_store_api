@@ -1,9 +1,13 @@
 ﻿using books_store_BLL.Dtos.Auth;
+using books_store_BLL.Dtos.Genre;
+using books_store_BLL.Dtos.Services;
 using books_store_BLL.Settings;
 using books_store_DAL.Entities;
 using books_store_DAL.Entities.identity;
+using books_store_DAL.Migrations;
 using books_store_DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -29,21 +33,21 @@ namespace books_store_BLL.Dtos.Services
             _userManager = userManager;
             _RefreshTokenRepository = refreshTokenRepository;
         }
-        private RefreshTOkenEntity GenerateRefreshToken()
+        private RefreshTokenEntity GenerateRefreshToken()
         {
             var bytes = new byte[64];
             var rng = RandomNumberGenerator.Create();
             rng.GetBytes(bytes);
 
             string token = Convert.ToBase64String(bytes);
-            return new RefreshTOkenEntity
+            return new RefreshTokenEntity
             {
                 Token = token,
                 ExpiresData = DateTime.UtcNow.AddDays(7),
             };
         }
 
-        public async Task<JwtDto> GenereteTokensAsync(AppUserEntity user)
+        public async Task<JwtDto> GenerateTokensAsync(AppUserEntity user)
         {
             var accessToken = await GenerateAccessTokenAsync(user);
             var refreshToken = GenerateRefreshToken();
@@ -53,6 +57,40 @@ namespace books_store_BLL.Dtos.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token
+            };
+        }
+
+        public async Task<ServiceResponse> RefreshAsync(string refreshToken)
+        {
+            var oldToken = await _RefreshTokenRepository.GetByTokenAsync(refreshToken);
+            if (oldToken == null || oldToken.IsExpired || oldToken.IsUsed)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "something went wrong. Refresh token doesn't work."
+                };
+            }
+            var user = await _userManager.FindByIdAsync(oldToken.UserId);
+            if(user == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "something went wrong"
+                };
+            }
+
+            oldToken.IsUsed = true;
+
+            await _RefreshTokenRepository.UpdateAsync(oldToken);
+
+            var tokens = await GenerateTokensAsync(user);
+            return new ServiceResponse
+            {
+                Success = true,
+                Message = "Tokens are created successfuly",
+                Payload = tokens
             };
         }
 
@@ -90,6 +128,20 @@ namespace books_store_BLL.Dtos.Services
             string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwtToken;
+        }
+        public async void CleanTokensAsync()
+        {
+            var tokens = await _RefreshTokenRepository.GetAll().ToListAsync();
+
+            if (tokens != null) return;
+
+            foreach(var token in tokens)
+            {
+                if(DateTime.Now - token.CreateDate > TimeSpan.FromDays(7))
+                {
+                    await _RefreshTokenRepository.DeleteAsync(token);
+                }
+            }
         }
     }
 }
