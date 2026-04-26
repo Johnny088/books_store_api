@@ -63,6 +63,15 @@ builder.Services.AddQuartz(q =>
         .WithIdentity("SendEmailJob-trigger")
         .WithCronSchedule("0 0 18 * * ?")
     );
+
+    var jobCleanToken = new JobKey("TokensCleaningJob");
+    q.AddJob<LogCleaningJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobCleanToken)
+        .WithIdentity("SendEmailJob-trigger")
+        .WithCronSchedule("0 0 18 * * ?")
+    );
 });
 
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
