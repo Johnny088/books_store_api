@@ -13,6 +13,7 @@ namespace books_store_DAL
         public DbSet<BookEntity> Books { get; set; }
         public DbSet<AuthorEntity> Authors { get; set; }
         public DbSet<GenreEntity> Genres { get; set; }
+        public DbSet<RefreshTOkenEntity> RefreshTokens { get; set; }
         //public DbSet<BookGenreEntity> BookGenres {  get; set; }
         public AppDbContext(DbContextOptions options)
             : base(options)
@@ -62,6 +63,12 @@ namespace books_store_DAL
                     .WithOne(e => e.User)
                     .HasForeignKey(ur => ur.UserId)
                     .IsRequired();
+
+                b.HasMany(e => e.Refreshtokens)
+                   .WithOne(e => e.User)
+                   .HasForeignKey(ur => ur.UserId)
+                   .OnDelete(DeleteBehavior.Cascade)
+                   .IsRequired();
             });
 
             modelBuilder.Entity<AppRoleEntity>(b =>

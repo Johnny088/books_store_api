@@ -164,7 +164,10 @@ namespace books_store_BLL.Dtos.Services
         }//+
         public async Task<ServiceResponse> GetAllAsync()
         {
-            var entities = await _bookRepository.Books.ToListAsync();
+            var entities = await _bookRepository.Books
+                .Include(b =>  b.Author)
+                .Include(b => b.Genres)
+                .ToListAsync();
             var dtos = _mapper.Map<List<BookDto>>(entities);
             return new ServiceResponse
             {

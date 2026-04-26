@@ -12,15 +12,15 @@ using books_store_DAL;
 namespace books_store_DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260331073014_identity")]
-    partial class identity
+    [Migration("20260426030306_RefreshToken")]
+    partial class RefreshToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -134,6 +134,38 @@ namespace books_store_DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("books_store_DAL.Entities.RefreshTOkenEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresData")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("books_store_DAL.Entities.identity.AppRoleClaimEntity", b =>
@@ -365,6 +397,17 @@ namespace books_store_DAL.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("books_store_DAL.Entities.RefreshTOkenEntity", b =>
+                {
+                    b.HasOne("books_store_DAL.Entities.identity.AppUserEntity", "User")
+                        .WithMany("Refreshtokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("books_store_DAL.Entities.identity.AppRoleClaimEntity", b =>
                 {
                     b.HasOne("books_store_DAL.Entities.identity.AppRoleEntity", "Role")
@@ -445,6 +488,8 @@ namespace books_store_DAL.Migrations
                     b.Navigation("Claims");
 
                     b.Navigation("Logins");
+
+                    b.Navigation("Refreshtokens");
 
                     b.Navigation("Tokens");
 

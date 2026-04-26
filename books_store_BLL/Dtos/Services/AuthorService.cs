@@ -182,17 +182,10 @@ namespace books_store_BLL.Dtos.Services
 
         public async Task<ServiceResponse> GetAllAsync()
         {
-            //var dtos = await _authorRepository.Authors
-            //    .Select(a => new AuthorDto { Name = a.Name, BirthDate = a.BirthDate,Image = a.Image, Id = a.Id})
-            //    .ToListAsync();
-            //return new ServiceResponse
-            //{
-            //    Success = true,
-            //    Message = "Authors are got successfuly",
-            //    Payload = dtos
-            //};
-            
-            var entities = await _authorRepository.Authors.ToListAsync();
+
+            var entities = await _authorRepository.Authors
+                .Include(a => a.Books)
+                .ToListAsync();
             var dtos = _mapper.Map<List<AuthorDto>>(entities);
             return new ServiceResponse
             {

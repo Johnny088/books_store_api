@@ -1,5 +1,8 @@
-﻿using books_store_BLL.Settings;
+﻿using books_store_BLL.Dtos.Auth;
+using books_store_BLL.Settings;
+using books_store_DAL.Entities;
 using books_store_DAL.Entities.identity;
+using books_store_DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -10,6 +13,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace books_store_BLL.Dtos.Services
@@ -18,14 +22,41 @@ namespace books_store_BLL.Dtos.Services
     {
         private readonly JwtSettings _jwtSettings;
         private readonly UserManager<AppUserEntity> _userManager;
-
-        public JwtService(IOptions<JwtSettings> jwtOptions, UserManager<AppUserEntity> userManager)
+        private readonly RefreshTokenRepository _RefreshTokenRepository;
+        public JwtService(IOptions<JwtSettings> jwtOptions, UserManager<AppUserEntity> userManager, RefreshTokenRepository refreshTokenRepository)
         {
             _jwtSettings = jwtOptions.Value;
             _userManager = userManager;
+            _RefreshTokenRepository = refreshTokenRepository;
+        }
+        private RefreshTOkenEntity GenerateRefreshToken()
+        {
+            var bytes = new byte[64];
+            var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(bytes);
+
+            string token = Convert.ToBase64String(bytes);
+            return new RefreshTOkenEntity
+            {
+                Token = token,
+                ExpiresData = DateTime.UtcNow.AddDays(7),
+            };
         }
 
-        public async Task<string> GenerateAccessToken(AppUserEntity user)
+        public async Task<JwtDto> GenereteTokensAsync(AppUserEntity user)
+        {
+            var accessToken = await GenerateAccessTokenAsync(user);
+            var refreshToken = GenerateRefreshToken();
+            refreshToken.UserId = user.Id;
+            await _RefreshTokenRepository.CreateAsync(refreshToken);
+            return new JwtDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token
+            };
+        }
+
+        public async Task<string> GenerateAccessTokenAsync(AppUserEntity user)
         {
             if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
             {

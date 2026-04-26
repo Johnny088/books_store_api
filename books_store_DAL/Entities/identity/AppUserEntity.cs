@@ -15,6 +15,7 @@ namespace books_store_DAL.Entities.identity
         public ICollection<AppUserLoginEntity> Logins { get; set; } = [];
         public  ICollection<AppUserTokenEntity> Tokens { get; set; } = [];
         public  ICollection<AppUserRoleEntity> UserRoles { get; set; } = [];
+        public ICollection<RefreshTOkenEntity> Refreshtokens { get; set; } = [];
 
     }
 }

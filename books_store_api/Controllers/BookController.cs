@@ -3,12 +3,15 @@ using books_store_api.Settings;
 using books_store_BLL.Dtos.Book;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace books_store_api.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/book")]
     public class BookController : ControllerBase
     {

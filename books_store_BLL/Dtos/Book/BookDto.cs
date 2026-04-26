@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using books_store_BLL.Dtos.Author;
+using books_store_BLL.Dtos.Genre;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +17,8 @@ namespace books_store_BLL.Dtos.Book
         public float Rating { get; set; }
         public int Pages { get; set; }
         public int PublishedYear { get; set; }
+        public List<string> Genres { get; set; } = [];
+        public AuthorDto? Author { get; set; }
 
     }
 }

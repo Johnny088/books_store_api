@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using books_store_BLL.Dtos.Book;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,5 +13,6 @@ namespace books_store_BLL.Dtos.Author
         public DateTime BirthDate {  get; set; }
         public string? Country { get; set; }
         public string? Image { get; set; }
+        //public List<BookDto> Books { get; set; } = new List<BookDto>();
     }
 }

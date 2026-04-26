@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Linq;
 namespace books_store_DAL.Repositories
 {
     public abstract class GenericRepository<TEntity>
@@ -68,7 +68,11 @@ namespace books_store_DAL.Repositories
         }
         public IQueryable<TEntity> GetAll()
         {
-            return _context.Set<TEntity>().AsNoTracking();
+            return _context.Set<TEntity>()
+                .AsNoTracking();
+                //.OrderBy(e => e.Id) 
+                //.Skip((pageNumber - 1) * pageSize)
+                //.Take(pageSize);
         }
     }
 }

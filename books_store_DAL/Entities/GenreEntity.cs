@@ -9,5 +9,9 @@ namespace books_store_DAL.Entities
         
         public required string Name { get; set; }
         public ICollection<BookEntity>? Books = new List<BookEntity>();
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
