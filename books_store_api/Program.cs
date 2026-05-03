@@ -55,22 +55,24 @@ builder.Host.UseSerilog();
 //Quartz
 builder.Services.AddQuartz(q =>
 {
+
     var jobKey = new JobKey("LogCleaningJob");
     q.AddJob<LogCleaningJob>(opts => opts.WithIdentity(jobKey));
 
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
-        .WithIdentity("SendEmailJob-trigger")
+        .WithIdentity("CleanLogs")
         .WithCronSchedule("0 0 18 * * ?")
     );
 
+
     var jobCleanToken = new JobKey("TokensCleaningJob");
-    q.AddJob<LogCleaningJob>(opts => opts.WithIdentity(jobKey));
+    q.AddJob<LogCleaningJob>(opts => opts.WithIdentity(jobCleanToken));
 
     q.AddTrigger(opts => opts
         .ForJob(jobCleanToken)
-        .WithIdentity("SendEmailJob-trigger")
-        .WithCronSchedule("0 0 18 * * ?")
+        .WithIdentity("CleanTokens")
+        .WithCronSchedule("0 0 19 * * ?")
     );
 });
 

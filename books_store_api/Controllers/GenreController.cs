@@ -1,5 +1,6 @@
 ﻿using books_store_api.Controllers.Extensions;
 using books_store_BLL.Dtos.Genre;
+using books_store_BLL.Dtos.Pagination;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Repositories;
@@ -28,12 +29,12 @@ namespace books_store_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery]PaginationDto pagination)
         {
             _logger.LogInformation(2000, $"{DateTime.Now} Get all genres request");
            
 
-            var result = await _genreService.GetAllAsync();
+            var result = await _genreService.GetAllAsync(pagination);
             return this.GetAction(result);
         }
      

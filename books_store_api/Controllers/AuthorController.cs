@@ -1,6 +1,7 @@
 ﻿using books_store_api.Controllers.Extensions;
 using books_store_api.Settings;
 using books_store_BLL.Dtos.Author;
+using books_store_BLL.Dtos.Pagination;
 using books_store_BLL.Dtos.Services;
 using books_store_DAL;
 using books_store_DAL.Entities;
@@ -28,10 +29,10 @@ namespace books_store_api.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery]PaginationDto pagination)
         {
             
-            var response = await _authorService.GetAllAsync();
+            var response = await _authorService.GetAllAsync(pagination);
             return this.GetAction(response);
             
         }

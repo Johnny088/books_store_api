@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using books_store_BLL.Dtos.Author;
 using books_store_BLL.Dtos.Genre;
+using books_store_BLL.Dtos.Pagination;
 using books_store_DAL.Entities;
 using books_store_DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -85,10 +87,25 @@ namespace books_store_BLL.Dtos.Services
 
             
         }  // +
-        public async Task<ServiceResponse> GetAllAsync()
+        public async Task<ServiceResponse> GetAllAsync(PaginationDto pagination)
         {
-            var entities = await _genreRepository.Genres.ToListAsync();
+            
+            int totalCount = await _genreRepository.Genres.CountAsync();
+
+            int pageSize = pagination.PageSize < 1 ? 20 : pagination.PageSize;
+            int pageCount = (int)Math.Ceiling((double)totalCount / pageSize);
+            int page = pagination.Page < 1 || pagination.Page > pageCount ? 1 : pagination.Page;
+
+            var entities = await _genreRepository.Genres
+                .OrderBy(b => b.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
             var dtos = _mapper.Map<List<GenreDto>>(entities);
+            
+
+
+
             return new ServiceResponse
             {
                 Success = true,
